@@ -285,7 +285,7 @@ func TestNoRoot(t *testing.T) {
 	}
 	_, err := rf.Find(nr, 0, 1)
 	t.Logf("%v", err)
-	if err != nil {
+	if err == nil {
 		t.Fatalf("Finding not valid root")
 	}
 }
