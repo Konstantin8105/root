@@ -1,11 +1,11 @@
-package rf_test
+package root_test
 
 import (
 	"fmt"
 	"math"
 	"testing"
 
-	"github.com/Konstantin8105/rf"
+	"github.com/Konstantin8105/root"
 )
 
 func Test(t *testing.T) {
@@ -223,23 +223,29 @@ func Test(t *testing.T) {
 		},
 	}
 
+	var counter int64
+
 	for i := range tcs {
 		t.Run(fmt.Sprintf("Case%3d", i), func(t *testing.T) {
 			tempFunc := func(x float64) (float64, error) {
+				counter++
 				return tcs[i].f(x), nil
 			}
-			root, err := rf.Find(tempFunc, tcs[i].Xmin, tcs[i].Xmax)
+			rootX, err := root.Find(tempFunc, tcs[i].Xmin, tcs[i].Xmax)
 			if err != nil {
 				t.Error(err)
 			}
-			if root < tcs[i].Xmin || tcs[i].Xmax < root {
+			if rootX < tcs[i].Xmin || tcs[i].Xmax < rootX {
 				t.Errorf("not valid root")
 			}
-			if math.Abs(tcs[i].f(root)) > rf.Precision {
+			if math.Abs(tcs[i].f(rootX)) > root.Precision {
 				t.Errorf("not valid precision")
 			}
 		})
 	}
+
+	averageCalls := float64(counter) / float64(len(tcs))
+	t.Logf("Average amount of calls: %.2f", averageCalls)
 }
 
 type xys struct {
@@ -272,7 +278,7 @@ func TestPanic(t *testing.T) {
 	p := func(float64) (float64, error) {
 		panic("PANIC")
 	}
-	_, err := rf.Find(p, 0, 1)
+	_, err := root.Find(p, 0, 1)
 	t.Logf("%v", err)
 	if err == nil {
 		t.Fatalf("Cannot panic finding")
@@ -283,7 +289,7 @@ func TestNoRoot(t *testing.T) {
 	nr := func(x float64) (float64, error) {
 		return 2*x + 5, nil
 	}
-	_, err := rf.Find(nr, 0, 1)
+	_, err := root.Find(nr, 0, 1)
 	t.Logf("%v", err)
 	if err == nil {
 		t.Fatalf("Finding not valid root")
@@ -299,7 +305,7 @@ func TestNoSomeRoot(t *testing.T) {
 			}
 			return 2*x + 5, nil
 		}
-		_, err := rf.Find(nr, 0, 1)
+		_, err := root.Find(nr, 0, 1)
 		t.Logf("%v", err)
 		if err == nil {
 			t.Fatalf("Finding not valid root: left")
@@ -313,7 +319,7 @@ func TestNoSomeRoot(t *testing.T) {
 			}
 			return 2*x + 5, nil
 		}
-		_, err := rf.Find(nr, 0, 1)
+		_, err := root.Find(nr, 0, 1)
 		t.Logf("%v", err)
 		if err == nil {
 			t.Fatalf("Finding not valid root: center")
@@ -327,7 +333,7 @@ func TestNoSomeRoot(t *testing.T) {
 			}
 			return 2*x + 5, nil
 		}
-		_, err := rf.Find(nr, 0, 1)
+		_, err := root.Find(nr, 0, 1)
 		t.Logf("%v", err)
 		if err == nil {
 			t.Fatalf("Finding not valid root: rigth")
