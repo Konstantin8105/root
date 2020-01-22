@@ -285,6 +285,17 @@ func TestPanic(t *testing.T) {
 	}
 }
 
+func TestChangeMinMax(t *testing.T) {
+	nr := func(x float64) (float64, error) {
+		return 2*x + 1, nil
+	}
+	_, err := root.Find(nr, 10, -10)
+	t.Logf("%v", err)
+	if err != nil {
+		t.Fatalf("Finding not valid root")
+	}
+}
+
 func TestNoRoot(t *testing.T) {
 	nr := func(x float64) (float64, error) {
 		return 2*x + 5, nil
