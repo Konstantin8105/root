@@ -3,228 +3,288 @@ package root_test
 import (
 	"fmt"
 	"math"
+	"os"
 	"testing"
 
 	"github.com/Konstantin8105/root"
 )
 
-func Test(t *testing.T) {
-	tcs := []struct {
-		f          func(x float64) float64
-		Xmin, Xmax float64
-	}{
-		{
-			func(x float64) float64 {
-				return (3.8-3.0*math.Sin(math.Sqrt(x)))/0.35 - x
-			},
-			2.0,
-			3.0,
+var tcs = []struct {
+	f          func(x float64) float64
+	Xmin, Xmax float64
+}{
+	{
+		func(x float64) float64 {
+			return (3.8-3.0*math.Sin(math.Sqrt(x)))/0.35 - x
 		},
-		{
-			func(x float64) float64 {
-				return 1.0/(3.0+math.Sin(3.6*x)) - x
-			},
-			0.0,
-			0.85,
+		2.0,
+		3.0,
+	},
+	{
+		func(x float64) float64 {
+			return 1.0/(3.0+math.Sin(3.6*x)) - x
 		},
-		{
-			func(x float64) float64 {
-				return math.Cos(math.Sqrt(1.0-0.3*x*x*x)) - x
-			},
-			0,
-			1,
+		0.0,
+		0.85,
+	},
+	{
+		func(x float64) float64 {
+			return math.Cos(math.Sqrt(1.0-0.3*x*x*x)) - x
 		},
-		{
-			func(x float64) float64 {
-				return math.Sin(math.Sqrt(1-0.4*x*x)) - x
-			},
-			0,
-			1,
+		0,
+		1,
+	},
+	{
+		func(x float64) float64 {
+			return math.Sin(math.Sqrt(1-0.4*x*x)) - x
 		},
-		{
-			func(x float64) float64 {
-				return 0.25*x*x*x - x - 1.2502
-			},
-			2,
-			3,
+		0,
+		1,
+	},
+	{
+		func(x float64) float64 {
+			return 0.25*x*x*x - x - 1.2502
 		},
-		{
-			func(x float64) float64 {
-				return 0.1*x*x - x*math.Log(x)
-			},
-			1,
-			2,
+		2,
+		3,
+	},
+	{
+		func(x float64) float64 {
+			return 0.1*x*x - x*math.Log(x)
 		},
-		{
-			func(x float64) float64 {
-				return 3*x - 4*math.Log(x) - 5
-			},
-			2,
-			4,
+		1,
+		2,
+	},
+	{
+		func(x float64) float64 {
+			return 3*x - 4*math.Log(x) - 5
 		},
-		{
-			func(x float64) float64 {
-				return math.Exp(x) - math.Exp(-x) - 2
-			},
-			0,
-			1,
+		2,
+		4,
+	},
+	{
+		func(x float64) float64 {
+			return math.Exp(x) - math.Exp(-x) - 2
 		},
-		{
-			func(x float64) float64 {
-				return x + math.Sqrt(x) + math.Pow(x, 1.0/3.0) - 2.5
-			},
-			0.4,
-			1,
+		0,
+		1,
+	},
+	{
+		func(x float64) float64 {
+			return x + math.Sqrt(x) + math.Pow(x, 1.0/3.0) - 2.5
 		},
-		{
-			func(x float64) float64 {
-				return math.Tan(x) - math.Pow(math.Tan(x), 3.0)/3 + math.Pow(math.Tan(x), 5)/5.0 - 1./3.
-			},
-			0,
-			0.8,
+		0.4,
+		1,
+	},
+	{
+		func(x float64) float64 {
+			return math.Tan(x) - math.Pow(math.Tan(x), 3.0)/3 + math.Pow(math.Tan(x), 5)/5.0 - 1./3.
 		},
-		{
-			func(x float64) float64 {
-				return math.Cos(2.0/x) - 2.0*math.Sin(1./x) + 1./x
-			},
-			1,
-			2,
+		0,
+		0.8,
+	},
+	{
+		func(x float64) float64 {
+			return math.Cos(2.0/x) - 2.0*math.Sin(1./x) + 1./x
 		},
-		{
-			func(x float64) float64 {
-				return math.Sin(math.Log(x)) - math.Cos(math.Log(x)) + 2.0*math.Log(x)
-			},
-			1,
-			3,
+		1,
+		2,
+	},
+	{
+		func(x float64) float64 {
+			return math.Sin(math.Log(x)) - math.Cos(math.Log(x)) + 2.0*math.Log(x)
 		},
-		{
-			func(x float64) float64 {
-				return math.Log(x) - x + 1.8
-			},
-			2,
-			3,
+		1,
+		3,
+	},
+	{
+		func(x float64) float64 {
+			return math.Log(x) - x + 1.8
 		},
-		{
-			func(x float64) float64 {
-				return 0.4 + math.Atan(math.Sqrt(x)) - x
-			},
-			1,
-			2,
+		2,
+		3,
+	},
+	{
+		func(x float64) float64 {
+			return 0.4 + math.Atan(math.Sqrt(x)) - x
 		},
-		{
-			func(x float64) float64 {
-				return x*math.Tan(x) - 1/3.0
-			},
-			0.2,
-			1,
+		1,
+		2,
+	},
+	{
+		func(x float64) float64 {
+			return x*math.Tan(x) - 1/3.0
 		},
-		{
-			func(x float64) float64 {
-				return math.Tan(0.55*x+0.1) - x*x
-			},
-			0,
-			1,
+		0.2,
+		1,
+	},
+	{
+		func(x float64) float64 {
+			return math.Tan(0.55*x+0.1) - x*x
 		},
-		{
-			func(x float64) float64 {
-				return 2.0 - math.Sin(1./x) - x
-			},
-			1.2,
-			2,
+		0,
+		1,
+	},
+	{
+		func(x float64) float64 {
+			return 2.0 - math.Sin(1./x) - x
 		},
-		{
-			func(x float64) float64 {
-				return 1.0 + math.Sin(x) - math.Log(1+x) - x
-			},
-			0,
-			1.5,
+		1.2,
+		2,
+	},
+	{
+		func(x float64) float64 {
+			return 1.0 + math.Sin(x) - math.Log(1+x) - x
 		},
-		{
-			func(x float64) float64 {
-				return math.Cos(math.Pow(x, 0.52)+2) + x
-			},
-			0.4,
-			1,
+		0,
+		1.5,
+	},
+	{
+		func(x float64) float64 {
+			return math.Cos(math.Pow(x, 0.52)+2) + x
 		},
-		{
-			func(x float64) float64 {
-				return math.Sqrt(math.Log(1+x)+3) - x
-			},
-			2,
-			3,
+		0.4,
+		1,
+	},
+	{
+		func(x float64) float64 {
+			return math.Sqrt(math.Log(1+x)+3) - x
 		},
-		{
-			func(x float64) float64 {
-				return math.Exp(x) + math.Log(x) - 10*x
-			},
-			3,
-			4,
+		2,
+		3,
+	},
+	{
+		func(x float64) float64 {
+			return math.Exp(x) + math.Log(x) - 10*x
 		},
-		{
-			func(x float64) float64 {
-				return 3*x - 14 + math.Exp(x) - math.Exp(-x)
-			},
-			1,
-			3,
+		3,
+		4,
+	},
+	{
+		func(x float64) float64 {
+			return 3*x - 14 + math.Exp(x) - math.Exp(-x)
 		},
-		{
-			func(x float64) float64 {
-				return 2*math.Pow(math.Log(x), 2) + 6*math.Log(x) - 5
-			},
-			1,
-			3,
+		1,
+		3,
+	},
+	{
+		func(x float64) float64 {
+			return 2*math.Pow(math.Log(x), 2) + 6*math.Log(x) - 5
 		},
-		{
-			func(x float64) float64 {
-				return 2*x*math.Sin(x) - math.Cos(x)
-			},
-			0.4,
-			1,
+		1,
+		3,
+	},
+	{
+		func(x float64) float64 {
+			return 2*x*math.Sin(x) - math.Cos(x)
 		},
-		{
-			// some strange function
-			func(x float64) float64 {
-				return PartLine(x, []xys{
-					{0, 4}, {0.3, 1}, {1.3, 0.5}, {1.35, -0.5}, {2.0, -1.5},
-				})
-			},
-			0,
-			2,
+		0.4,
+		1,
+	},
+	{
+		// some strange function
+		func(x float64) float64 {
+			return PartLine(x, []xys{
+				{0, 4}, {0.3, 1}, {1.3, 0.5}, {1.35, -0.5}, {2.0, -1.5},
+			})
 		},
-		{
-			// some strange function
-			func(x float64) float64 {
-				return PartLine(x, []xys{
-					{0, 3}, {0.25, 4}, {0.5, 0.1}, {2.0, -0.1},
-				})
-			},
-			0,
-			2,
+		0,
+		2,
+	},
+	{
+		// some strange function
+		func(x float64) float64 {
+			return PartLine(x, []xys{
+				{0, 3}, {0.25, 4}, {0.5, 0.1}, {2.0, -0.1},
+			})
 		},
-		{
-			// some strange function
-			func(x float64) float64 {
-				return PartLine(x, []xys{
-					{0, 3}, {0.1, 4}, {0.2, 0.01}, {1.6, -0.01}, {1.9, -4.0}, {2.0, -3.0},
-				})
-			},
-			0,
-			2,
+		0,
+		2,
+	},
+	{
+		// some strange function
+		func(x float64) float64 {
+			return PartLine(x, []xys{
+				{0, 3}, {0.1, 4}, {0.2, 0.01}, {1.6, -0.01}, {1.9, -4.0}, {2.0, -3.0},
+			})
 		},
-		{
-			// some strange function
-			func(x float64) float64 {
-				return PartLine(x, []xys{
-					{0, 3}, {0.1, 0.001}, {1.8, -0.001}, {2.0, -0.1},
-				})
-			},
-			0,
-			2,
+		0,
+		2,
+	},
+	{
+		// some strange function
+		func(x float64) float64 {
+			return PartLine(x, []xys{
+				{0, 3}, {0.1, 0.001}, {1.8, -0.001}, {2.0, -0.1},
+			})
 		},
+		0,
+		2,
+	},
+}
+
+func Benchmark(b *testing.B) {
+	for i := range tcs {
+		b.Run(fmt.Sprintf("Case%3d", i), func(b *testing.B) {
+			for n := 0; n < b.N; n++ {
+				_, err := root.Find(func(x float64) (float64, error) {
+					return tcs[i].f(x), nil
+				}, tcs[i].Xmin, tcs[i].Xmax)
+				if err != nil {
+					panic(err)
+				}
+			}
+		})
+	}
+}
+
+func Example() {
+	for i := range tcs {
+		fmt.Fprintf(os.Stdout, "Case%3d", i)
+		counter := 0
+		_, err := root.Find(func(x float64) (float64, error) {
+			counter++
+			return tcs[i].f(x), nil
+		}, tcs[i].Xmin, tcs[i].Xmax)
+		if err != nil {
+			panic(err)
+		}
+		fmt.Fprintf(os.Stdout, "\t%3d\n", counter)
 	}
 
-	var counter int64
+	// Output:
+	// Case  0	 24
+	// Case  1	 24
+	// Case  2	 24
+	// Case  3	 24
+	// Case  4	 24
+	// Case  5	 24
+	// Case  6	 25
+	// Case  7	 24
+	// Case  8	 24
+	// Case  9	 24
+	// Case 10	 24
+	// Case 11	 26
+	// Case 12	 24
+	// Case 13	 24
+	// Case 14	 24
+	// Case 15	 24
+	// Case 16	 24
+	// Case 17	 25
+	// Case 18	 24
+	// Case 19	 24
+	// Case 20	 27
+	// Case 21	 25
+	// Case 22	 25
+	// Case 23	 24
+	// Case 24	 26
+	// Case 25	 25
+	// Case 26	 25
+	// Case 27	 25
+}
 
+func Test(t *testing.T) {
+	var counter int64
 	for i := range tcs {
 		t.Run(fmt.Sprintf("Case%3d", i), func(t *testing.T) {
 			tempFunc := func(x float64) (float64, error) {
