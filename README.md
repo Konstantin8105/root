@@ -1,4 +1,4 @@
-# roof
+# root
 
 root-finding algorithm
 
