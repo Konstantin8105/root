@@ -3,7 +3,6 @@ package root_test
 import (
 	"fmt"
 	"math"
-	"os"
 	"testing"
 
 	"github.com/Konstantin8105/root"
@@ -221,6 +220,20 @@ var tcs = []struct {
 		0,
 		2,
 	},
+	{
+		func(x float64) float64 {
+			return x
+		},
+		0,
+		10,
+	},
+	{
+		func(x float64) float64 {
+			return 10 - x
+		},
+		0,
+		10,
+	},
 }
 
 func Benchmark(b *testing.B) {
@@ -236,51 +249,6 @@ func Benchmark(b *testing.B) {
 			}
 		})
 	}
-}
-
-func Example() {
-	for i := range tcs {
-		fmt.Fprintf(os.Stdout, "Case%3d", i)
-		counter := 0
-		_, err := root.Find(func(x float64) (float64, error) {
-			counter++
-			return tcs[i].f(x), nil
-		}, tcs[i].Xmin, tcs[i].Xmax)
-		if err != nil {
-			panic(err)
-		}
-		fmt.Fprintf(os.Stdout, "\t%3d\n", counter)
-	}
-
-	// Output:
-	// Case  0	 24
-	// Case  1	 24
-	// Case  2	 24
-	// Case  3	 24
-	// Case  4	 24
-	// Case  5	 24
-	// Case  6	 25
-	// Case  7	 24
-	// Case  8	 24
-	// Case  9	 24
-	// Case 10	 24
-	// Case 11	 26
-	// Case 12	 24
-	// Case 13	 24
-	// Case 14	 24
-	// Case 15	 24
-	// Case 16	 24
-	// Case 17	 25
-	// Case 18	 24
-	// Case 19	 24
-	// Case 20	 27
-	// Case 21	 25
-	// Case 22	 25
-	// Case 23	 24
-	// Case 24	 26
-	// Case 25	 25
-	// Case 26	 25
-	// Case 27	 25
 }
 
 func Test(t *testing.T) {
@@ -364,6 +332,19 @@ func TestNoRoot(t *testing.T) {
 	t.Logf("%v", err)
 	if err == nil {
 		t.Fatalf("Finding not valid root")
+	}
+}
+
+func TestRootError(t *testing.T) {
+	r, err := root.Find(func(x float64) (y float64, err error) {
+		if -1 <= x && x <= 1 {
+			err = fmt.Errorf("stop")
+			return
+		}
+		return x, nil
+	}, -10, 100)
+	if err == nil {
+		t.Fatalf("Not stopped by iterations: %v",r)
 	}
 }
 

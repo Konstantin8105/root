@@ -105,6 +105,19 @@ func Find(f func(float64) (float64, error), minX, maxX float64) (root float64, e
 		}
 	}
 
+	if math.Abs(yLeft) < prec {
+		// find the solution
+		root = xLeft
+		_, err = f(root)
+		return
+	}
+	if math.Abs(yRigth) < prec {
+		// find the solution
+		root = xRigth
+		_, err = f(root)
+		return
+	}
+
 	// iterations
 	for iter := 0; ; iter++ {
 		// check max iteration
