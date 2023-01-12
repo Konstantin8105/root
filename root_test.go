@@ -8,10 +8,12 @@ import (
 	"github.com/Konstantin8105/root"
 )
 
-var tcs = []struct {
+type tc struct {
 	f          func(x float64) float64
 	Xmin, Xmax float64
-}{
+}
+
+var tcs = []tc{
 	{
 		func(x float64) float64 {
 			return (3.8-3.0*math.Sin(math.Sqrt(x)))/0.35 - x
@@ -266,8 +268,8 @@ func Test(t *testing.T) {
 			if rootX < tcs[i].Xmin || tcs[i].Xmax < rootX {
 				t.Errorf("not valid root")
 			}
-			if math.Abs(tcs[i].f(rootX)) > root.Precision {
-				t.Errorf("not valid precision")
+			if root.Precision < math.Abs(tcs[i].f(rootX)) {
+				t.Errorf("not valid precision: %e < %e", root.Precision, math.Abs(tcs[i].f(rootX)))
 			}
 		})
 	}
@@ -344,7 +346,7 @@ func TestRootError(t *testing.T) {
 		return x, nil
 	}, -10, 100)
 	if err == nil {
-		t.Fatalf("Not stopped by iterations: %v",r)
+		t.Fatalf("Not stopped by iterations: %v", r)
 	}
 }
 

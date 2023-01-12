@@ -124,8 +124,14 @@ func Find(f func(float64) (float64, error), minX, maxX float64) (root float64, e
 		if iter >= maxIter {
 			return -1, fmt.Errorf("Too many iterations: %d", iter)
 		}
-		if math.Abs(yRoot) < prec && math.Abs(xRigth-xLeft) < prec {
-			break // find the solution
+		if xLeft == 0 {
+			if math.Abs(yRoot) < prec && math.Abs(xRigth-xLeft) < prec {
+				break // find the solution
+			}
+		} else {
+			if math.Abs(yRoot) < prec && math.Abs((xRigth-xLeft)/xLeft) < prec {
+				break // find the solution
+			}
 		}
 		if math.Signbit(yLeft) != math.Signbit(yRoot) {
 			xRigth, yRigth = xRoot, yRigth
