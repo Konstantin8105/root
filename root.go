@@ -6,7 +6,7 @@ import (
 )
 
 // Constants
-const (
+var (
 	// Precision of rott-finding
 	Precision float64 = 1e-6
 
