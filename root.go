@@ -42,6 +42,38 @@ var (
 	MaxIteration int = 500
 )
 
+type ErrorFind struct {
+	Type ErrType
+	Err  error
+}
+
+func (e ErrorFind) Error() string {
+	return fmt.Sprintf("%s:%s", e.Type, e.Err)
+}
+
+type ErrType int8
+
+const (
+	MaximalIteration ErrType = iota
+	InternalErr
+	NotValidValue
+	Recovery
+)
+
+func (et ErrType) String() string {
+	switch et {
+	case MaximalIteration:
+		return "max iteration"
+	case InternalErr:
+		return "internal error"
+	case NotValidValue:
+		return "not valid value"
+	case Recovery:
+		return "recovery"
+	}
+	return "undefined"
+}
+
 // Find
 // In mathematics, the bisection method is a root-finding method that applies
 // to any continuous functions for which one knows two values with opposite
@@ -67,16 +99,13 @@ var (
 // Last operation of finding is run function.
 //
 func Find(f func(float64) (float64, error), minX, maxX float64) (root float64, err error) {
-	// error handling
-	defer func() {
-		if err != nil {
-			err = fmt.Errorf("Cannot find [%.5e,%.5e]: %v", minX, maxX, err)
-		}
-	}()
 	// recovering
 	defer func() {
 		if r := recover(); r != nil {
-			err = fmt.Errorf("%#v", r)
+			err = ErrorFind{
+				Type: Recovery,
+				Err:  fmt.Errorf("%#v", r),
+			}
 		}
 	}()
 	// replace borders
@@ -122,7 +151,11 @@ func Find(f func(float64) (float64, error), minX, maxX float64) (root float64, e
 	for iter := 0; ; iter++ {
 		// check max iteration
 		if iter >= maxIter {
-			return -1, fmt.Errorf("Too many iterations: %d", iter)
+			err = ErrorFind{
+				Type: MaximalIteration,
+				Err:  fmt.Errorf("Too many iterations: %d", iter),
+			}
+			return
 		}
 		if xLeft == 0 {
 			if math.Abs(yRoot) < prec && math.Abs(xRigth-xLeft) < prec {
@@ -145,14 +178,40 @@ func Find(f func(float64) (float64, error), minX, maxX float64) (root float64, e
 		// preparing next middle point
 		xRoot = middle()
 		if yRoot, errRoot = f(xRoot); errRoot != nil {
-			err = errRoot
+			err = ErrorFind{
+				Type: InternalErr,
+				Err:  errRoot,
+			}
 			return
 		}
-		// Only for debug information:
-		//	fmt.Printf(
-		//		"%2d %15.6e %15.6e %15.6e\n",
-		//		iter, xRoot, yRoot, math.Abs((xRigth-xLeft)/xRigth),
-		//	)
+		if math.IsNaN(xRoot) {
+			err = ErrorFind{
+				Type: NotValidValue,
+				Err:  fmt.Errorf("xRoot is NaN"),
+			}
+			return
+		}
+		if math.IsNaN(yRoot) {
+			err = ErrorFind{
+				Type: NotValidValue,
+				Err:  fmt.Errorf("yRoot is NaN"),
+			}
+			return
+		}
+		if math.IsInf(xRoot, 0) {
+			err = ErrorFind{
+				Type: NotValidValue,
+				Err:  fmt.Errorf("xRoot is Inf"),
+			}
+			return
+		}
+		if math.IsInf(yRoot, 0) {
+			err = ErrorFind{
+				Type: NotValidValue,
+				Err:  fmt.Errorf("yRoot is Inf"),
+			}
+			return
+		}
 	}
 	root = xRoot
 	_, err = f(root)
