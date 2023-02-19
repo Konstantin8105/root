@@ -171,8 +171,11 @@ func Find(f func(float64) (float64, error), minX, maxX float64) (root float64, e
 		} else if math.Signbit(yRoot) != math.Signbit(yRigth) {
 			xLeft, yLeft = xRoot, yRoot
 		} else {
-			err = fmt.Errorf("No root: [%.3e, %.3e, %.3e]",
-				yLeft, yRoot, yRigth)
+			err = ErrorFind{
+				Type: InternalErr,
+				Err: fmt.Errorf("No root: [%.3e, %.3e, %.3e]",
+					yLeft, yRoot, yRigth),
+			}
 			return
 		}
 		// preparing next middle point
