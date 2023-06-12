@@ -126,6 +126,26 @@ func Find(f func(float64) (float64, error), minX, maxX float64) (root float64, e
 		prec    = Precision
 		maxIter = MaxIteration
 	)
+	// another algo
+	// just for information
+	//
+	// middle = func() float64 {
+	// 	// xLeft , yLeft  //
+	// 	// xRigth, yRigth //
+	// 	var (
+	// 		dY = yRigth - yLeft
+	// 		dX = xRigth - xLeft
+	// 	)
+	// 	if 1e-6 < math.Abs(dX) {
+	// 		a := dY / dX
+	// 		b := yRigth - a*xRigth
+	// 		x := -b / a
+	// 		if xLeft < x && x < xRigth {
+	// 			return x
+	// 		}
+	// 	}
+	// 	return xLeft + (xRigth-xLeft)/2.0
+	// }
 	// check errors
 	for _, errLocal := range []error{errLeft, errRigth, errRoot} {
 		if errLocal != nil {

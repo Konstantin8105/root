@@ -238,6 +238,37 @@ var tcs = []tc{
 	},
 }
 
+// cpu: Intel(R) Xeon(R) CPU           X5550  @ 2.67GHz
+// Benchmark/Case__0-16         	  782059	      1592 ns/op	       0 B/op	       0 allocs/op
+// Benchmark/Case__1-16         	  892148	      1270 ns/op	       0 B/op	       0 allocs/op
+// Benchmark/Case__2-16         	  793620	      1407 ns/op	       0 B/op	       0 allocs/op
+// Benchmark/Case__3-16         	  885932	      1292 ns/op	       0 B/op	       0 allocs/op
+// Benchmark/Case__4-16         	 2887514	       412.3 ns/op	       0 B/op	       0 allocs/op
+// Benchmark/Case__5-16         	  925917	      1204 ns/op	       0 B/op	       0 allocs/op
+// Benchmark/Case__6-16         	  891277	      1352 ns/op	       0 B/op	       0 allocs/op
+// Benchmark/Case__7-16         	  657052	      1824 ns/op	       0 B/op	       0 allocs/op
+// Benchmark/Case__8-16         	  393985	      3172 ns/op	       0 B/op	       0 allocs/op
+// Benchmark/Case__9-16         	  231390	      4703 ns/op	       0 B/op	       0 allocs/op
+// Benchmark/Case_10-16         	  639090	      1868 ns/op	       0 B/op	       0 allocs/op
+// Benchmark/Case_11-16         	  252045	      4060 ns/op	       0 B/op	       0 allocs/op
+// Benchmark/Case_12-16         	 1038470	      1138 ns/op	       0 B/op	       0 allocs/op
+// Benchmark/Case_13-16         	  849825	      1301 ns/op	       0 B/op	       0 allocs/op
+// Benchmark/Case_14-16         	 1034085	      1179 ns/op	       0 B/op	       0 allocs/op
+// Benchmark/Case_15-16         	  998756	      1090 ns/op	       0 B/op	       0 allocs/op
+// Benchmark/Case_16-16         	 1022642	      1131 ns/op	       0 B/op	       0 allocs/op
+// Benchmark/Case_17-16         	  723380	      1673 ns/op	       0 B/op	       0 allocs/op
+// Benchmark/Case_18-16         	  287638	      3809 ns/op	       0 B/op	       0 allocs/op
+// Benchmark/Case_19-16         	  856590	      1460 ns/op	       0 B/op	       0 allocs/op
+// Benchmark/Case_20-16         	  667652	      1831 ns/op	       0 B/op	       0 allocs/op
+// Benchmark/Case_21-16         	  669262	      1729 ns/op	       0 B/op	       0 allocs/op
+// Benchmark/Case_22-16         	  402802	      2818 ns/op	       0 B/op	       0 allocs/op
+// Benchmark/Case_23-16         	  906816	      1273 ns/op	       0 B/op	       0 allocs/op
+// Benchmark/Case_24-16         	 1328061	       897.7 ns/op	       0 B/op	       0 allocs/op
+// Benchmark/Case_25-16         	 1770864	       699.4 ns/op	       0 B/op	       0 allocs/op
+// Benchmark/Case_26-16         	 1239733	       962.5 ns/op	       0 B/op	       0 allocs/op
+// Benchmark/Case_27-16         	 1394635	       862.0 ns/op	       0 B/op	       0 allocs/op
+// Benchmark/Case_28-16         	31016390	        35.25 ns/op	       0 B/op	       0 allocs/op
+// Benchmark/Case_29-16         	28753783	        35.74 ns/op	       0 B/op	       0 allocs/op
 func Benchmark(b *testing.B) {
 	for i := range tcs {
 		b.Run(fmt.Sprintf("Case%3d", i), func(b *testing.B) {
