@@ -93,12 +93,11 @@ func (et ErrType) String() string {
 //		err  - error if some is not ok
 //
 // Notes:
-//	* Concurrency acceptable
-//	* Panic-free function
+//   - Concurrency acceptable
+//   - Panic-free function
 //
 // Last operation of finding is run function.
-//
-func Find(f func(float64) (float64, error), minX, maxX float64) (root float64, err error) {
+func Find[F64 ~float64, F64R ~float64](f func(F64) (F64R, error), minX, maxX F64) (root F64R, err error) {
 	// recovering
 	defer func() {
 		if r := recover(); r != nil {
@@ -115,7 +114,7 @@ func Find(f func(float64) (float64, error), minX, maxX float64) (root float64, e
 	// preparing variables
 	var (
 		xLeft, xRigth = minX, maxX
-		middle        = func() float64 {
+		middle        = func() F64 {
 			return xLeft + (xRigth-xLeft)/2.0
 		}
 		xRoot            = middle()
@@ -154,16 +153,16 @@ func Find(f func(float64) (float64, error), minX, maxX float64) (root float64, e
 		}
 	}
 
-	if math.Abs(yLeft) < prec {
+	if math.Abs(float64(yLeft)) < prec {
 		// find the solution
-		root = xLeft
-		_, err = f(root)
+		root = F64R(xLeft)
+		_, err = f(F64(root))
 		return
 	}
-	if math.Abs(yRigth) < prec {
+	if math.Abs(float64(yRigth)) < prec {
 		// find the solution
-		root = xRigth
-		_, err = f(root)
+		root = F64R(xRigth)
+		_, err = f(F64(root))
 		return
 	}
 
@@ -178,17 +177,17 @@ func Find(f func(float64) (float64, error), minX, maxX float64) (root float64, e
 			return
 		}
 		if xLeft == 0 {
-			if math.Abs(yRoot) < prec && math.Abs(xRigth-xLeft) < prec {
+			if math.Abs(float64(yRoot)) < prec && math.Abs(float64(xRigth-xLeft)) < prec {
 				break // find the solution
 			}
 		} else {
-			if math.Abs(yRoot) < prec && math.Abs((xRigth-xLeft)/xLeft) < prec {
+			if math.Abs(float64(yRoot)) < prec && math.Abs(float64((xRigth-xLeft)/xLeft)) < prec {
 				break // find the solution
 			}
 		}
-		if math.Signbit(yLeft) != math.Signbit(yRoot) {
+		if math.Signbit(float64(yLeft)) != math.Signbit(float64(yRoot)) {
 			xRigth, yRigth = xRoot, yRigth
-		} else if math.Signbit(yRoot) != math.Signbit(yRigth) {
+		} else if math.Signbit(float64(yRoot)) != math.Signbit(float64(yRigth)) {
 			xLeft, yLeft = xRoot, yRoot
 		} else {
 			err = ErrorFind{
@@ -207,28 +206,28 @@ func Find(f func(float64) (float64, error), minX, maxX float64) (root float64, e
 			}
 			return
 		}
-		if math.IsNaN(xRoot) {
+		if math.IsNaN(float64(xRoot)) {
 			err = ErrorFind{
 				Type: NotValidValue,
 				Err:  fmt.Errorf("xRoot is NaN"),
 			}
 			return
 		}
-		if math.IsNaN(yRoot) {
+		if math.IsNaN(float64(yRoot)) {
 			err = ErrorFind{
 				Type: NotValidValue,
 				Err:  fmt.Errorf("yRoot is NaN"),
 			}
 			return
 		}
-		if math.IsInf(xRoot, 0) {
+		if math.IsInf(float64(xRoot), 0) {
 			err = ErrorFind{
 				Type: NotValidValue,
 				Err:  fmt.Errorf("xRoot is Inf"),
 			}
 			return
 		}
-		if math.IsInf(yRoot, 0) {
+		if math.IsInf(float64(yRoot), 0) {
 			err = ErrorFind{
 				Type: NotValidValue,
 				Err:  fmt.Errorf("yRoot is Inf"),
@@ -236,7 +235,7 @@ func Find(f func(float64) (float64, error), minX, maxX float64) (root float64, e
 			return
 		}
 	}
-	root = xRoot
-	_, err = f(root)
+	root = F64R(xRoot)
+	_, err = f(F64(root))
 	return
 }

@@ -304,6 +304,36 @@ func Test(t *testing.T) {
 			}
 		})
 	}
+	t.Run("Type", func(t *testing.T) {
+		type F64 float64
+		i := 0
+		tempFunc := func(x F64) (F64, error) {
+			counter++
+			return F64(tcs[i].f(float64(x))), nil
+		}
+		rootX, err := root.Find(tempFunc, F64(tcs[i].Xmin), F64(tcs[i].Xmax))
+		if err != nil {
+			t.Error(err)
+		}
+		if float64(rootX) < tcs[i].Xmin || tcs[i].Xmax < float64(rootX) {
+			t.Errorf("not valid root")
+		}
+	})
+	t.Run("Type2", func(t *testing.T) {
+		type F64 float64
+		i := 0
+		tempFunc := func(x F64) (float64, error) {
+			counter++
+			return tcs[i].f(float64(x)), nil
+		}
+		rootX, err := root.Find(tempFunc, F64(tcs[i].Xmin), F64(tcs[i].Xmax))
+		if err != nil {
+			t.Error(err)
+		}
+		if float64(rootX) < tcs[i].Xmin || tcs[i].Xmax < float64(rootX) {
+			t.Errorf("not valid root")
+		}
+	})
 
 	averageCalls := float64(counter) / float64(len(tcs))
 	t.Logf("Average amount of calls: %.2f", averageCalls)
