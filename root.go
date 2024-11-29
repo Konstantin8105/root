@@ -97,7 +97,7 @@ func (et ErrType) String() string {
 //   - Panic-free function
 //
 // Last operation of finding is run function.
-func Find[F64 ~float64, F64R ~float64](f func(F64) (F64R, error), minX, maxX F64) (root F64R, err error) {
+func Find[F64 ~float64, F64R ~float64](f func(F64) (F64R, error), minX, maxX F64) (root F64, err error) {
 	// recovering
 	defer func() {
 		if r := recover(); r != nil {
@@ -155,13 +155,13 @@ func Find[F64 ~float64, F64R ~float64](f func(F64) (F64R, error), minX, maxX F64
 
 	if math.Abs(float64(yLeft)) < prec {
 		// find the solution
-		root = F64R(xLeft)
+		root = xLeft
 		_, err = f(F64(root))
 		return
 	}
 	if math.Abs(float64(yRigth)) < prec {
 		// find the solution
-		root = F64R(xRigth)
+		root = xRigth
 		_, err = f(F64(root))
 		return
 	}
@@ -235,7 +235,7 @@ func Find[F64 ~float64, F64R ~float64](f func(F64) (F64R, error), minX, maxX F64
 			return
 		}
 	}
-	root = F64R(xRoot)
+	root = xRoot
 	_, err = f(F64(root))
 	return
 }
